@@ -5,18 +5,16 @@ import numpy as np
 import math
 
 
-""" Calculate the confidence of the face detection
-
-"""
 def face_confidence(face_distance, face_match_threshold=0.6):
-    range = (1.0 - face_match_threshold)
-    linear_val = (1.0 - face_distance) / (range * 2)
+    face_range = (1.0 - face_match_threshold)
+    linear_val = (1.0 - face_distance) / (face_range * 2)
 
     if face_distance > face_match_threshold:
         return str(round(linear_val * 100, 2)) + '%'
     else:
         value = (linear_val + ((1.0 - linear_val) * math.pow((linear_val - 0.5) * 2, 0.2))) * 100
         return str(round(value, 2)) + '%'
+
 
 class FaceRecognition:
     face_locations = []
@@ -50,7 +48,7 @@ class FaceRecognition:
             ret, frame = video_capture.read()
 
             if self.process_current_frame:
-                small_frame = cv2.resize(frame, (0,0), fx=0.25, fy=0.25)
+                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
                 rgb_small_frame = small_frame[:, :, ::-1]
 
                 # Find all face in current frame
