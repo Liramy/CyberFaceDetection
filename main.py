@@ -38,6 +38,9 @@ class FaceRecognition:
 
         print(self.known_face_names)
 
+    def identify_image(self):
+        pass
+
     def run_recognition(self):
         video_capture = cv2.VideoCapture(0)
 
