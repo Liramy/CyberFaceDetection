@@ -1,9 +1,12 @@
 import face_recognition
-import os, sys
+import os,sys
 import cv2
 import numpy as np
 import math
 
+
+# Explanation about the type of code needed -
+# https://sefiks.com/2021/12/01/homomorphic-facial-recognition-with-tenseal/
 
 def face_confidence(face_distance, face_match_threshold=0.6):
     face_range = (1.0 - face_match_threshold)
@@ -53,7 +56,7 @@ class FaceRecognition:
 
                 # Find all face in current frame
                 self.face_locations = face_recognition.face_locations(rgb_small_frame)
-                self.face_encodings = face_recognition.face_encodings(rgb_small_frame, self.face_locations)
+                self.face_encodings = face_recognition.face_encodings(small_frame, self.face_locations)
 
                 self.face_names = []
                 for face_encoding in self.face_encodings:
