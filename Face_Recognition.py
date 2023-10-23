@@ -91,3 +91,7 @@ class FaceRecognition:
 
         video_capture.release()
         cv2.destroyWindow()
+
+if __name__ == '__main__':
+    fr = FaceRecognition()
+    fr.run_recognition()
