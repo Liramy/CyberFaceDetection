@@ -30,7 +30,7 @@ class FaceRecognition:
         # encode faces
 
     def encode_faces(self):
-        for image in os.listdir('Faces'):
+        for image in os.listdir('../Faces'):
             face_image = face_recognition.load_image_file(f'Faces/{image}')
             face_encoding = face_recognition.face_encodings(face_image)[0]
 
@@ -38,6 +38,28 @@ class FaceRecognition:
             self.known_face_names.append(image)
 
         print(self.known_face_names)
+
+    def run_image_recognition(self, face):
+        resized_face = cv2.resize(face, (0, 0), fx=0.25, fy=0.25)
+        rgb_face = resized_face[:, :, ::-1]
+
+        self.face_locations = face_recognition.face_locations(rgb_face)
+        self.face_encodings = face_recognition.face_encodings(resized_face, self.face_locations)
+
+        self.face_names = []
+        for face_encoding in self.face_encodings:
+            matches = face_recognition.compare_faces(self.known_face_encoding, face_encoding)
+            name = 'Unknown'
+            confidence = 'Unknown'
+
+            face_distances = face_recognition.face_distance(self.known_face_encoding, face_encoding)
+            best_math_index = np.argmin(face_distances)
+
+            if matches[best_math_index]:
+                name = self.known_face_names[best_math_index]
+                confidence = face_confidence(face_distances[best_math_index])
+
+            self.face_names.append(f'{name} ({confidence})')
 
     def run_recognition(self):
         video_capture = cv2.VideoCapture(0)
@@ -49,27 +71,7 @@ class FaceRecognition:
             ret, frame = video_capture.read()
 
             if self.process_current_frame:
-                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-                rgb_small_frame = small_frame[:, :, ::-1]
-
-                # Find all face in current frame
-                self.face_locations = face_recognition.face_locations(rgb_small_frame)
-                self.face_encodings = face_recognition.face_encodings(small_frame, self.face_locations)
-
-                self.face_names = []
-                for face_encoding in self.face_encodings:
-                    matches = face_recognition.compare_faces(self.known_face_encoding, face_encoding)
-                    name = 'Unknown'
-                    confidence = 'Unknown'
-
-                    face_distances = face_recognition.face_distance(self.known_face_encoding, face_encoding)
-                    best_math_index = np.argmin(face_distances)
-
-                    if matches[best_math_index]:
-                        name = self.known_face_names[best_math_index]
-                        confidence = face_confidence(face_distances[best_math_index])
-
-                    self.face_names.append(f'{name} ({confidence})')
+                self.run_image_recognition(frame)
 
             self.process_current_frame = not self.process_current_frame
 
@@ -91,6 +93,7 @@ class FaceRecognition:
 
         video_capture.release()
         cv2.destroyWindow()
+
 
 if __name__ == '__main__':
     fr = FaceRecognition()
