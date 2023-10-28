@@ -1,15 +1,5 @@
-import tkinter
-from tkinter import *
 import tkinter as tk
-import tkinter.messagebox as mbox
-from tkinter import ttk
-from tkinter import filedialog
-from PIL import ImageTk, Image
-import cv2
-import os
-import numpy as np
-from cv2 import *
-import random
+import socket
 
 from Client import AddClient
 from Client.LoginFrame import LoginFrame
@@ -20,6 +10,9 @@ class App(tk.Tk):
         super().__init__()
         self.geometry("1000x700")
         self.title("Cyber Project")
+        self.socket = socket.socket()
+        self.PORT = 8000
+        self.socket.connect('127.0.0.1')
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -44,6 +37,11 @@ class App(tk.Tk):
         frame = self.frames[page_name]
         frame.tkraise()
 
+    def get_socket(self):
+        return self.socket
+
+    def send_data(self, data):
+        self.socket.send(data)
 
 if __name__ == '__main__':
     app = App()
