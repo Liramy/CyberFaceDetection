@@ -71,7 +71,7 @@ server_socket.listen()
 while True:
     client_socket, client_addr = server_socket.accept()
     client_dict[client_addr] = client_socket
-    client_interaction[client_socket] = 0
+    client_interaction[client_addr] = -1
 
     on_welcome = threading.Thread(target=on_new_client, args=(client_socket, client_addr,))
     on_welcome.start()
@@ -80,14 +80,16 @@ while True:
 
     for readable in rlist:
         data = readable.recv(2048)
+        readable_addr = readable.getsockname()
 
-        # When interaction is 0, client sends username and password
-        if client_interaction[readable] == 0:
-            welcome_user = threading.Thread(target=create_user, args=(data,))
-            welcome_user.start()
+        # When interaction is -1, action is undecided
+        if client_interaction[readable_addr] == -1:
+            client_interaction[readable_addr] = data.decode()
 
-        if client_interaction[readable] == 1:
-            threading.Thread(target=load_image, args=(data,))
+        # When interaction is 0, action is adding a new user
+        if client_interaction[readable_addr] == 1:
+            add_user = threading.Thread(target=create_user, args=(data,))
+            add_user.start()
 
-        if client_interaction[readable] == 2:
+        if client_interaction[readable_addr] == 2:
             pass
