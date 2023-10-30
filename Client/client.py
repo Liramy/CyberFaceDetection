@@ -12,7 +12,7 @@ class App(tk.Tk):
         self.title("Cyber Project")
         self.socket = socket.socket()
         self.PORT = 8000
-        self.socket.connect('127.0.0.1')
+        self.socket.connect(('127.0.0.1', self.PORT))
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
@@ -39,9 +39,6 @@ class App(tk.Tk):
 
     def get_socket(self):
         return self.socket
-
-    def send_data(self, data):
-        self.socket.send(data)
 
 if __name__ == '__main__':
     app = App()
