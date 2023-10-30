@@ -1,4 +1,5 @@
 import os.path
+import pickle
 import socket
 import tkinter
 import ImageEncyption
@@ -84,11 +85,19 @@ class AddClientFrame(ttk.Frame):
             path=f"../Client/Face/{self.username.get()}.{self.image_path[-3:]}")
 
         file = open(f"../Client/Face/{self.username.get()}.{self.image_path[-3:]}", 'rb')
-
-        # Send image to the server socket as bytes
-        self.controller.get_socket().send(bytearray(file.read()))
-
+        image = file.read()
         file.close()
 
         # Deletes the image from existence
         os.remove(f"../Client/Face/{self.username.get()}.{self.image_path[-3:]}")
+
+        # Dictionary with all data
+        user_data = {
+            'image': image,
+            'interaction': 'Add User',
+            'username': self.username.get(),
+            'password': self.password.get()
+        }
+
+        user_data = pickle.dumps(user_data)
+        self.controller.get_socket().sendall(user_data)
