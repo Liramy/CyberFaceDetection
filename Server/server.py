@@ -8,26 +8,6 @@ import os
 
 from PIL import Image
 
-"""
-  Adding employees:
-  - When someone enters your group in the client GUI menu press Add Employee.
-  - In the new tab enter the name and password.
-  - After that it will ask for a picture, make sure to give one where 
-    the face is visible and clear.
-  - Press 'Done' and you're done, a new employee was added.
-"""
-
-"""
-  Start of operations:
-  - The server initializes the loging in feature.
-  - Client enters and gives a name that exists with the correct password,
-    the check is done by encrypting the password and checking if the encrypted
-    entered password is the same as the stored one.
-  - Server checks and then sends the client the encrypted image of the employee.
-  - Client does the decrypting with the user_key and checks if the faces match.
-  - If they match the server accepts the client and gives confirmation.
-"""
-
 
 def receive_user(c: socket.socket):
     received_data = c.recv(4096)
@@ -44,8 +24,37 @@ def receive_user(c: socket.socket):
         create_user(username=username, password=password, image=image)
 
     else:
-        # TODO: Send login info and image
-        pass
+        input_username = data['username']
+
+        with open('.../Server/Users.txt', 'r') as file:
+            users_data = file.readlines()
+
+        isExists = False
+
+        for user_data in users_data:
+            username, password = user_data.split('-:-')
+            if username == input_username:
+                with open(f'../Server/Users_face/{username}.png', 'rb') as image:
+                    image_data = image.read()
+
+                isExists = True
+
+                user = {
+                    'image': image_data,
+                    'username': username,
+                    'password': password,
+                    'exists': isExists
+                }
+
+                serialized_data = pickle.dumps(user)
+
+                c.sendall(serialized_data)
+                break
+        if not isExists:
+            user = {
+                'exists': isExists
+            }
+            c.sendall(pickle.dumps(user))
 
 
 def create_user(username, password, image):
@@ -68,10 +77,6 @@ def create_dir():
     users_exists = os.path.exists('../Server/Users_face')
     if not users_exists:
         os.makedirs('../Server/Users_face')
-
-
-def load_image(img_bytes):
-    image = Image.open(io.BytesIO(img_bytes))
 
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

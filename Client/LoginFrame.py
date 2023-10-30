@@ -1,3 +1,4 @@
+import pickle
 import tkinter
 from tkinter import *
 from tkinter import ttk
@@ -31,3 +32,26 @@ class LoginFrame(ttk.Frame):
         add_switch_button = Button(
             master=self, text="Add client", font=("Arial", 15), command=lambda: controller.show_frame("Add"))
         add_switch_button.grid(row=0, column=0, sticky="w", pady=70, padx=80)
+
+    def log_in(self, server, controller):
+        raw_input = {'interaction': 'Log In', 'username': self.username.get()}
+        serialized_input = pickle.dumps(raw_input)
+
+        server.sendall(serialized_input)
+
+        raw_data = server.recv(4096)
+        data = pickle.loads(raw_data)
+
+        if not data['exists']:
+            self.showError('Incorrect username')
+
+        else:
+            password = data['password']
+            image = data['image']
+
+            if self.password == password:
+                controller.send_image(image)
+
+
+    def showError(self, error_name):
+        pass
