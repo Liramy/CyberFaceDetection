@@ -29,7 +29,7 @@ def receive_user(c: socket.socket):
         with open('.../Server/Users.txt', 'r') as file:
             users_data = file.readlines()
 
-        isExists = False
+        is_exists = False
 
         for user_data in users_data:
             username, password = user_data.split('-:-')
@@ -37,22 +37,22 @@ def receive_user(c: socket.socket):
                 with open(f'../Server/Users_face/{username}.png', 'rb') as image:
                     image_data = image.read()
 
-                isExists = True
+                is_exists = True
 
                 user = {
                     'image': image_data,
                     'username': username,
                     'password': password,
-                    'exists': isExists
+                    'exists': is_exists
                 }
 
                 serialized_data = pickle.dumps(user)
 
                 c.sendall(serialized_data)
                 break
-        if not isExists:
+        if not is_exists:
             user = {
-                'exists': isExists
+                'exists': is_exists
             }
             c.sendall(pickle.dumps(user))
 
