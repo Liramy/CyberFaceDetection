@@ -34,8 +34,13 @@ def receive_user(c: socket.socket):
         for user_data in users_data:
             username, password = user_data.split('-:-')
             if username == input_username:
-                with open(f'../Server/Users_face/{username}.png', 'rb') as image:
-                    image_data = image.read()
+                try:
+                    with open(f'../Server/Users_face/{username}.png', 'rb') as image:
+                        image_data = image.read()
+
+                except NameError:
+                    with open(f'../Server/Users_face/{username}.jpg', 'rb') as image:
+                        image_data = image.read()
 
                 is_exists = True
 
