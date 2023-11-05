@@ -101,3 +101,4 @@ class AddClientFrame(ttk.Frame):
 
         user_data = pickle.dumps(user_data)
         self.controller.get_socket().sendall(user_data)
+        self.controller.show_frame("Login")

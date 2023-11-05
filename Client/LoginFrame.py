@@ -29,11 +29,17 @@ class LoginFrame(ttk.Frame):
         password_textbox = ttk.Entry(self, textvariable=self.password, font=("Arial", 15))
         password_textbox.grid(row=2, column=2, columnspan=1, pady=40)
 
+        login_button = Button(
+            master=self, text="Log In", font=("Arial", 15),
+            command=lambda: self.log_in(controller.get_socket())
+        )
+        login_button.grid(row=4, column=1, pady=40)
+
         add_switch_button = Button(
             master=self, text="Add client", font=("Arial", 15), command=lambda: controller.show_frame("Add"))
         add_switch_button.grid(row=0, column=0, sticky="w", pady=70, padx=80)
 
-    def log_in(self, server, controller):
+    def log_in(self, server):
         raw_input = {'interaction': 'Log In', 'username': self.username.get()}
         serialized_input = pickle.dumps(raw_input)
 
@@ -49,9 +55,8 @@ class LoginFrame(ttk.Frame):
             password = data['password']
             image = data['image']
 
-            if self.password == password:
-                controller.send_image(image)
-
+            if self.password.get() == password:
+                self.controller.close_app()
 
     def showError(self, error_name):
-        pass
+        print(error_name)

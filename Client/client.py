@@ -40,5 +40,9 @@ class App(tk.Tk):
     def get_socket(self):
         return self.socket
 
+    def close_app(self):
+        self.quit()
+
+
 if __name__ == '__main__':
     app = App()

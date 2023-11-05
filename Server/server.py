@@ -26,20 +26,23 @@ def receive_user(c: socket.socket):
     else:
         input_username = data['username']
 
-        with open('.../Server/Users.txt', 'r') as file:
+        with open('Users.txt', 'r') as file:
             users_data = file.readlines()
 
         is_exists = False
+        user = {
+            'exists': is_exists
+        }
 
         for user_data in users_data:
             username, password = user_data.split('-:-')
             if username == input_username:
                 try:
-                    with open(f'../Server/Users_face/{username}.png', 'rb') as image:
+                    with open(f'Users_face/{username}.png', 'rb') as image:
                         image_data = image.read()
 
                 except NameError:
-                    with open(f'../Server/Users_face/{username}.jpg', 'rb') as image:
+                    with open(f'Users_face/{username}.jpg', 'rb') as image:
                         image_data = image.read()
 
                 is_exists = True
@@ -56,32 +59,36 @@ def receive_user(c: socket.socket):
                 c.sendall(serialized_data)
                 break
         if not is_exists:
-            user = {
-                'exists': is_exists
-            }
+            c.sendall(pickle.dumps(user))
+        else:
             c.sendall(pickle.dumps(user))
 
 
 def create_user(username, password, image):
-    with open('../Server/Users.txt', 'r') as file:
+    with open('Users.txt', 'r') as file:
         file_data = file.read()
 
-    with open('../Server/Users.txt', 'w') as file:
+    with open('Users.txt', 'w') as file:
         file.write(f"{file_data}\n{username}-:-{password}")
 
-    with open(f'../Server/Users_face/{username}.png', 'wb') as file:
-        file.write(image)
+    try:
+        with open(f'Users_face/{username}.png', 'wb') as file:
+            file.write(image)
+
+    except NameError:
+        with open(f'Users_face/{username}.jpg', 'wb') as file:
+            file.write(image)
 
 
 def create_dir():
-    users_exists = os.path.exists('../Server/Users.txt')
+    users_exists = os.path.exists('Users.txt')
     if not users_exists:
-        with open('../Server/Users.txt', 'w') as file:
+        with open('Users.txt', 'w') as file:
             pass
 
-    users_exists = os.path.exists('../Server/Users_face')
+    users_exists = os.path.exists('Users_face')
     if not users_exists:
-        os.makedirs('../Server/Users_face')
+        os.makedirs('Users_face')
 
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
